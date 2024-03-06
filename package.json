@@ -1,0 +1,33 @@
+{
+  "name": "hit-point-api",
+  "version": "1.0.0",
+  "description": "API implementation for managing a player character's Hit Points.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeaveItToBeaver/ddb-back-end-developer-challenge.git"
+  },
+  "keywords": [
+    "DnD-Beyond",
+    "API",
+    "Character-Sheet",
+    "HitPoints"
+  ],
+  "author": "Jason Beaver",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LeaveItToBeaver/ddb-back-end-developer-challenge/issues"
+  },
+  "homepage": "https://github.com/LeaveItToBeaver/ddb-back-end-developer-challenge#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  }
+}
