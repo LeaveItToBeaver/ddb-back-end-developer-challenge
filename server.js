@@ -12,7 +12,7 @@ const startServer = (port) => {
 server.on('error', (error) => {
     if (error.code === 'EADDRINUSE') {
         console.log(`Port ${port} is already in use. Trying the next available port...`);
-        startServer(++port); // Increment port number and try again
+        startServer(++port);
     } else {
         console.error('Failed to start server:', error);
     }
