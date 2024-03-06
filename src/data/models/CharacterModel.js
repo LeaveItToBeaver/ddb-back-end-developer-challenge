@@ -17,33 +17,24 @@ class CharacterModel {
         this.tempHp = 0;
     };
 
-    totalConstitution() {
-        const baseConstitution = this.stats.constitution;
-        const constitutionModifier = this.items
-            .filter(item => item.modifier.affectedObject === 'stats' && item.modifier.affectedValue === 'constitution')
-            .reduce((total, item) => total + item.modifier.value, 0);
-        return baseConstitution + constitutionModifier;
-    };
-
-    takeDamage(damageType, amount) {
-        if (this.immunities.includes(damageType)) {
-            // No damage taken if immune
-            return;
-        }
-
-        let finalDamage = amount;
-        if (this.resistances.includes(damageType)) {
-            finalDamage = Math.floor(amount / 2); // Half damage if resistant
-        }
-
+    applyDamage(finalDamage) {
         if (this.tempHp > 0) {
             const damageToTempHp = Math.min(finalDamage, this.tempHp);
             this.tempHp -= damageToTempHp;
             finalDamage -= damageToTempHp;
         }
 
-        this.hitPoints = Math.max(this.hitPoints - finalDamage, -1); // Ensure HP doesn't go below 0
-    };
+        this.hitPoints = Math.max(this.hitPoints - finalDamage, 0);
+    }
+
+    takeDamage(damageType, amount) {
+        if (this.immunities.includes(damageType)) {
+            return;
+        }
+
+        const finalDamage = this.resistances.includes(damageType) ? Math.floor(amount / 2) : amount;
+        this.applyDamage(finalDamage);
+    }
 
     heal(amount) {
         if(this.tempHp > 0)

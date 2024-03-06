@@ -4,39 +4,43 @@ const CharacterRepository = require('../repositories/CharacterRepository.js');
 const charactersFolder = path.join(__dirname, '../', 'data', 'charactersJSON');
 const characterRepo = new CharacterRepository(charactersFolder);
 
+const handleError = (error, res) => {
+    console.error(error);
+    res.status(500).json({
+        error: 'Internal Server Error',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
+};
+
+const getCharacter = async (id) => {
+    await characterRepo.loadCharacters();
+    return characterRepo.getCharacterById(id);
+};
 
 exports.getCharacterList = async (req, res) => {
     try {
         await characterRepo.loadCharacters();
         const characters = characterRepo.getAllCharacters();
-        console.log(characterRepo.getAllCharacters());
+        console.log(characters);
         await characterRepo.saveCharacters();
-
         res.json(characters);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error', details: process.env.NODE_ENV === 'development' ? error.message : undefined });
-
+        handleError(error, res);
     }
 };
 
 exports.getCharacter = async (req, res) => {
     try {
-        await characterRepo.loadCharacters();
-        console.log(characterRepo.getAllCharacters());
-
         const { id } = req.params;
-        const character = characterRepo.getCharacterById(id);
+        const character = await getCharacter(id);
 
         if (!character) {
-            return res.status(404).send({error: 'Character not found', details: process.env.NODE_ENV === 'development' ? error.message : undefined});
+            return res.status(404).json({ error: 'Character not found' });
         }
 
         res.json(character);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error', details: process.env.NODE_ENV === 'development' ? error.message : undefined });
-
+        handleError(error, res);
     }
 };
 
@@ -44,26 +48,22 @@ exports.dealDamage = async (req, res) => {
     const { id } = req.params;
     const { damageType, damageAmount } = req.body;
 
-    if (damageAmount < 0){
-        return res.status(400).json({ error: `${damageAmount} is an invalid damange amount` })
+    if (damageAmount < 0) {
+        return res.status(400).json({ error: `${damageAmount} is an invalid damage amount` });
     }
 
     try {
-        await characterRepo.loadCharacters();
-        const character = characterRepo.getCharacterById(id);
+        const character = await getCharacter(id);
 
         if (!character) {
             return res.status(404).json({ error: 'Character not found' });
         }
 
         character.takeDamage(damageType, damageAmount);
-
         await characterRepo.saveCharacters();
-
-        res.json({ message: 'Damage dealt successfully'});
+        res.json({ message: 'Damage dealt successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error', details: process.env.NODE_ENV === 'development' ? error.message : undefined });
+        handleError(error, res);
     }
 };
 
@@ -76,27 +76,21 @@ exports.healCharacter = async (req, res) => {
     }
 
     try {
-        await characterRepo.loadCharacters();
-        const character = characterRepo.getCharacterById(id);
-
-        const healthCheck = healAmount + character.currentHp;
+        const character = await getCharacter(id);
 
         if (!character) {
             return res.status(404).json({ error: 'Character not found' });
         }
 
-        if (healthCheck > character.hitPoints){
-            return res.status(400).json({ error: 'Excessive healing' })
+        if (healAmount + character.currentHp > character.hitPoints) {
+            return res.status(400).json({ error: 'Excessive healing' });
         }
+
         character.heal(healAmount);
-
         await characterRepo.saveCharacters();
-
-        res.json({ message: 'Character healed successfully', character: character });
-
+        res.json({ message: 'Character healed successfully', character });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error', details: process.env.NODE_ENV === 'development' ? error.message : undefined });
+        handleError(error, res);
     }
 };
 
@@ -105,21 +99,16 @@ exports.addTempHp = async (req, res) => {
     const { tempHpAmount } = req.body;
 
     try {
-        await characterRepo.loadCharacters();
-        const character = characterRepo.getCharacterById(id);
+        const character = await getCharacter(id);
 
         if (!character) {
-            return res.status(404).json({ error: 'Character not found', details: process.env.NODE_ENV === 'development' ? error.message : undefined });
+            return res.status(404).json({ error: 'Character not found' });
         }
 
         character.addTempHp(tempHpAmount);
-
         await characterRepo.saveCharacters();
-
         res.json({ message: 'Temporary Hit Points added successfully', character });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error', details: process.env.NODE_ENV === 'development' ? error.message : undefined });
-
+        handleError(error, res);
     }
 };
