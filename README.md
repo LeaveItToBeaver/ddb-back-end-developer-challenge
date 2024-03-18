@@ -1,63 +1,136 @@
 # DDB Back End Developer Challenge
 
-### Overview
-This task focuses on creating an API for managing a player character's Hit Points (HP) within our game. The API will enable clients to perform various operations related to HP, including dealing damage of different types, considering character resistances and immunities, healing, and adding temporary Hit Points. The task requires building a service that interacts with HP data provided in the `briv.json` file and persists throughout the application's lifetime.
+# README:
 
-### Task Requirements
+This repository contains a fun and experimental implementation of the DDB Back End Developer Challenge. The challenge focuses on creating an API for managing a player character's Hit Points (HP) within a game, allowing clients to perform operations like dealing damage, healing, and adding temporary Hit Points.
 
-#### API Operations
-1. **Deal Damage**
-    - Implement the ability for clients to deal damage of different types (e.g., bludgeoning, fire) to a player character.
-    - Ensure that the API calculates damage while considering character resistances and immunities.
+## Purpose
 
-    > Suppose a player character is hit by an attack that deals Piercing damage, and the attacker rolls a 14 on the damage's Hit Die (with a Piercing damage type). `[Character Hit Points - damage: 25 - 14 = 11]`
+The purpose of this project is to explore and practice various aspects of back-end development, such as:
 
-2. **Heal**
-    - Enable clients to heal a player character, increasing their HP.
+- Building RESTful APIs using Express.js
+- Implementing business logic for game mechanics
+- Working with JSON data and file-based storage
+- Writing unit tests to ensure code correctness
+- Documenting API endpoints and project structure
 
-3. **Add Temporary Hit Points**
-    - Implement the functionality to add temporary Hit Points to a player character.
-    - Ensure that temporary Hit Points follow the rules: they are not additive, always taking the higher value, and cannot be healed.
+## Disclaimer
 
-    > Imagine a player character named "Eldric" currently has 11 Hit Points (HP) and no temporary Hit Points. He finds a magical item that grants him an additional 10 HP during the next fight. When the attacker rolls a 19, Eldric will lose all 10 temporary Hit Points and 9 from his player HP.
+Please note that this implementation is purely for educational and recreational purposes. It is not intended to be a production-ready solution and may have limitations and simplifications compared to a real-world application.
 
-#### Implementation Details
-- Build the API using your preferred technology stack.
-- Ensure that character information, including HP, is initialized during the start of the application. Developers do not need to calculate HP; it is provided in the `briv.json` file.
-- Retrieve character information, including HP, from the `briv.json` file.
+## Branches
+
+The repository includes different branches that showcase various stages and features of the project:
+
+- `master`: The primary branch, encapsulating the essential functionality.
+- `feature/mongodb-integration`: Showcases how MongoDB can serve as a durable storage system for character information.
+- `feature/test-and-enhancements`: Created to implement experimental functionality and tests as well as enhance the initial API. 
+- `initial-api-no-db`: Represents the initial API setup without database integration.
+
+Feel free to explore the different branches to see how the project evolves and incorporates additional functionalities.
+
+## Getting Started
+
+To run the project locally, follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/ddb-backend-challenge.git
+   ```
+2. Install the dependancies:
+   ```bash
+   cd ddb-back-end-developer-challenge
+   npm install
+   ```
+3. Start the server:
+    ```bash
+    npm start
+    ```
+4. The API will be accessible at http://localhost:3000.
+
+## Contributing
+
+As this project is primarily for personal learning and experimentation, contributions are not expected. However, if you have any suggestions, feedback, or ideas, feel free to open an issue or reach out to me.
+
+Special thanks to the D&D Beyond team for creating such a fun project.
+
+Happy coding and may your adventures be filled with critical hits! ⚔️🎲✨
 
 
-#### Data Storage
-- You have the flexibility to choose the data storage method for character information.
+# DOCS:
 
-### Instructions to Run Locally
-1. Clone the repository or obtain the project files.
-2. Install any required dependencies using your preferred package manager.
-3. Configure the API with necessary settings (e.g., database connection if applicable).
-4. Build and run the API service locally.
-5. Utilize the provided `briv.json` file as a sample character data, including HP, for testing the API.
+## API Endpoints
 
-### Additional Notes
-- Temporary Hit Points take precedence over the regular HP pool and cannot be healed.
-- Characters with resistance take half damage, while characters with immunity take no damage from a damage type.
-- Use character filename as identifier
+### Get All Characters
 
-#### Possible Damage Types in D&D
-Here is a list of possible damage types that can occur in Dungeons & Dragons (D&D). These damage types should be considered when dealing damage or implementing character resistances and immunities:
-- Bludgeoning
-- Piercing
-- Slashing
-- Fire
-- Cold
-- Acid
-- Thunder
-- Lightning
-- Poison
-- Radiant
-- Necrotic
-- Psychic
-- Force
+- **URL**: `/characters`
+- **Method**: `GET`
+- **Description**: Retrieves a list of all characters.
 
-If you have any questions or require clarification, please reach out to your Wizards of the Coast contact, and we will provide prompt assistance.
+### Get Character by ID
 
-Good luck with the implementation!
+- **URL**: `/characters/:id`
+- **Method**: `GET`
+- **Description**: Retrieves a specific character by their ID.
+
+### Deal Damage
+
+- **URL**: `/characters/:id/damage`
+- **Method**: `POST`
+- **Description**: Deals damage to a character.
+- **Request Body**:
+  ```json
+  {
+    "damageType": "Piercing",
+    "damageAmount": 10
+  }
+  ```
+### Heal Character
+
+- **URL**: `/characters/:id/heal`
+- **Method**: `POST`
+- **Description**: Heals a character.
+- **Request Body**:
+  ```json
+  {
+    "healAmount": 20
+  }
+  ```
+### Add Temporary Hit Points
+
+- **URL**: `/characters/:id/temp-hp`
+- **Method**: `POST`
+- **Description**: Adds temporary Hit Points to a character.
+- **Request Body**:
+  ```json
+  {
+    "tempHpAmount": 15
+  }
+  ```
+### Error Handling
+
+The API handles various error scenarios and returns appropriate error responses:
+
+- 400 Bad Request: Returned when the request payload is invalid or missing required fields.
+- 404 Not Found: Returned when the requested character is not found.
+- 500 Internal Server Error: Returned when an unexpected error occurs on the server.
+
+### Testing
+
+The project includes a set of unit tests to verify the functionality of the API. The tests cover scenarios such as retrieving characters, dealing damage, healing, adding temporary Hit Points, and handling edge cases.
+
+To run the tests, use the following command:
+
+```bash
+npm test
+```
+
+Future Enhancements
+
+This implementation serves as a starting point and can be further enhanced with additional features and improvements, such as:
+
+- Integrating with a database for persistent storage of character data.
+- Implementing authentication and authorization for secure access to the API.
+- Adding more robust error handling and logging.
+- Optimizing performance through caching and efficient data retrieval.
+- Expanding the API to include other game-related operations and data management.
